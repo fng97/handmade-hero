@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(my_project LANGUAGES CXX)
+project(handmade_hero LANGUAGES CXX)
 
 option(HMH_BUILD_TESTING "Enable testing" ON)
 option(HMH_ENABLE_ADDRESS_SANITIZER "Enable address sanitizer" OFF)
@@ -63,9 +63,12 @@ cpmaddpackage(
   OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt"
 )
 
+find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
+
 add_subdirectory(src/lib)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE lib SDL2::SDL2 SDL2::SDL2main)
 
