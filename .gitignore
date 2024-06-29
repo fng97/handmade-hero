@@ -1,0 +1,10 @@
+# CMake
+build
+
+# clangd
+.cache
+compile_commands.json
+
+# CPM.cmake cache
+.cpm-cache
+
