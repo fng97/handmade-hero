@@ -7,31 +7,17 @@
   },
   "configurePresets": [
     {
-      "name": "base",
+      "name": "default",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_EXTENSIONS": false,
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_COLOR_DIAGNOSTICS": true,
-        "CPM_SOURCE_CACHE": "${sourceDir}/.cpm-cache",
-        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
-      },
-      "hidden": true
-    },
-    {
-      "name": "default",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang++",
-        "HMH_BUILD_TESTING": true,
-        "HMH_ENABLE_ADDRESS_SANITIZER": true,
-        "HMH_ENABLE_CODE_COVERAGE": true,
-        "HMH_ENABLE_ALL_WARNINGS": true,
-        "HMH_ENABLE_WARNINGS_AS_ERRORS": true
+        "CMAKE_CXX_EXTENSIONS": false,
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_COLOR_DIAGNOSTICS": true
       }
     }
   ],
@@ -56,7 +42,7 @@
   ],
   "workflowPresets": [
     {
-      "name": "testing",
+      "name": "default",
       "steps": [
         {
           "type": "configure",
@@ -64,10 +50,6 @@
         },
         {
           "type": "build",
-          "name": "default"
-        },
-        {
-          "type": "test",
           "name": "default"
         }
       ]

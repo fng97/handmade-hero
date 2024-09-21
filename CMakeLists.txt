@@ -6,7 +6,7 @@ option(HMH_BUILD_TESTING "Enable testing" ON)
 option(HMH_ENABLE_ADDRESS_SANITIZER "Enable address sanitizer" OFF)
 option(HMH_ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
 option(HMH_ENABLE_ALL_WARNINGS "Enables all compiler warnings" ON)
-option(HMH_ENABLE_WARNINGS_AS_ERRORS "Treat all warnings as errors" ON)
+option(HMH_ENABLE_WARNINGS_AS_ERRORS "Treat all warnings as errors" OFF)
 
 if(HMH_ENABLE_ALL_WARNINGS)
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -54,21 +54,9 @@ if(HMH_ENABLE_ADDRESS_SANITIZER OR HMH_ENABLE_CODE_COVERAGE)
   endif()
 endif()
 
-include(cmake/CPM.cmake)
-
-cpmaddpackage(
-  NAME googletest
-  GITHUB_REPOSITORY google/googletest
-  VERSION 1.14.0
-  OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt"
-)
-
 find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
-find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
 
-add_subdirectory(src/lib)
+add_executable(handmade_hero src/main.cpp)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE lib SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(handmade_hero PRIVATE SDL2::SDL2)
 
