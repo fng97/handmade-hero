@@ -1,16 +1,20 @@
 #include <SDL.h>
 #include <SDL_error.h>
 #include <SDL_events.h>
+#include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_video.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <stdio.h>
 
-constexpr int SCREEN_WIDTH = 640;
-constexpr int SCREEN_HEIGHT = 480;
+constexpr int DEFAULT_WINDOW_WIDTH = 640;
+constexpr int DEFAULT_WINDOW_HEIGHT = 480;
 
 int main() {
+  int last_width = DEFAULT_WINDOW_WIDTH;
+
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
               << std::endl;
@@ -20,7 +24,7 @@ int main() {
 
   SDL_Window *window = SDL_CreateWindow(
       "Handmade Hero", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-      SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
+      DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
   if (!window) {
     std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError()
@@ -38,6 +42,12 @@ int main() {
     SDL_Quit();
     return -1;
   }
+
+  SDL_Texture *texture = SDL_CreateTexture(
+      renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+      DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+
+  void *pixels = malloc(DEFAULT_WINDOW_WIDTH * DEFAULT_WINDOW_HEIGHT * 4);
 
   SDL_Event event;
   bool quit = false;
@@ -58,6 +68,22 @@ int main() {
       case SDL_WINDOWEVENT_SIZE_CHANGED:
         printf("SDL_WINDOWEVENT_SIZE_CHANGED: %d x %d\n", event.window.data1,
                event.window.data2);
+
+        if (pixels) {
+          free(pixels);
+        }
+
+        if (texture) {
+          SDL_DestroyTexture(texture);
+        }
+
+        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                                    SDL_TEXTUREACCESS_STREAMING,
+                                    event.window.data1, event.window.data2);
+
+        last_width = event.window.data2;
+        pixels = malloc(event.window.data1 * event.window.data2 * 4);
+
         break;
 
       case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -65,19 +91,9 @@ int main() {
         break;
 
       case SDL_WINDOWEVENT_EXPOSED:
-        static bool is_white = true;
-
-        if (is_white == true) {
-          SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-          is_white = false;
-        } else {
-          SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-          is_white = true;
-        }
-
-        SDL_RenderClear(renderer);
+        SDL_UpdateTexture(texture, 0, pixels, last_width * 4);
+        SDL_RenderCopy(renderer, texture, 0, 0);
         SDL_RenderPresent(renderer);
-
         break;
 
       default:
