@@ -11,7 +11,6 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_EXTENSIONS": false,
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_COLOR_DIAGNOSTICS": true
       },
@@ -32,8 +31,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "HMH_ENABLE_WARNINGS_AS_ERRORS": false,
-        "HMH_ENABLE_ASAN": false,
-        "HMH_ENABLE_UBSAN": false
+        "HMH_ENABLE_ASAN": true,
+        "HMH_ENABLE_UBSAN": true
       }
     }
   ],
