@@ -5,15 +5,37 @@
 #include <SDL_render.h>
 #include <SDL_video.h>
 
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
 
 constexpr int DEFAULT_WINDOW_WIDTH = 640;
 constexpr int DEFAULT_WINDOW_HEIGHT = 480;
+constexpr int BYTES_PER_PIXEL = 4;
+
+void render_weird_gradient(void *bitmap_buffer, const int bitmap_width,
+                           const int bitmap_height, const int blue_offset,
+                           const int green_offset) {
+  const int pitch = bitmap_width * BYTES_PER_PIXEL;
+  std::uint8_t *row = (std::uint8_t *)bitmap_buffer;
+
+  for (int y = 0; y < bitmap_height; ++y) {
+    std::uint32_t *pixel = (std::uint32_t *)row;
+
+    for (int x = 0; x < bitmap_width; ++x) {
+      std::uint8_t blue = x + blue_offset;
+      std::uint8_t green = y + green_offset;
+
+      *pixel++ = (green << 8) | blue;
+    }
+  }
+}
 
 int main() {
   int last_width = DEFAULT_WINDOW_WIDTH;
+  int bitmap_width = DEFAULT_WINDOW_WIDTH;
+  int bitmap_height = DEFAULT_WINDOW_HEIGHT;
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
@@ -47,7 +69,8 @@ int main() {
       renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
       DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 
-  void *pixels = malloc(DEFAULT_WINDOW_WIDTH * DEFAULT_WINDOW_HEIGHT * 4);
+  void *pixels =
+      malloc(DEFAULT_WINDOW_WIDTH * DEFAULT_WINDOW_HEIGHT * BYTES_PER_PIXEL);
 
   SDL_Event event;
   bool quit = false;
@@ -82,7 +105,8 @@ int main() {
                                     event.window.data1, event.window.data2);
 
         last_width = event.window.data2;
-        pixels = malloc(event.window.data1 * event.window.data2 * 4);
+        pixels =
+            malloc(event.window.data1 * event.window.data2 * BYTES_PER_PIXEL);
 
         break;
 
@@ -91,7 +115,7 @@ int main() {
         break;
 
       case SDL_WINDOWEVENT_EXPOSED:
-        SDL_UpdateTexture(texture, 0, pixels, last_width * 4);
+        SDL_UpdateTexture(texture, 0, pixels, last_width * BYTES_PER_PIXEL);
         SDL_RenderCopy(renderer, texture, 0, 0);
         SDL_RenderPresent(renderer);
         break;
